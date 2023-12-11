@@ -1,34 +1,31 @@
 import React, { useState, useEffect } from 'react';
-import ContactForm from './ContactForm';
-import ContactList from './ContactList';
-import Filter from './Filter';
+import ContactForm from '../ContactForm';
+import ContactList from '../ContactList';
+import Filter from '../Filter';
 import { nanoid } from 'nanoid';
 import './App.css';
 
 const App = () => {
-  const [contacts, setContacts] = useState([]);
-  const [filter, setFilter] = useState('');
-
-  useEffect(() => {
+  const [contacts, setContacts] = useState(() => {
     const savedContacts = localStorage.getItem('contacts');
-    if (savedContacts) {
-      setContacts(JSON.parse(savedContacts));
-    }
-  }, []);
+    return savedContacts ? JSON.parse(savedContacts) : [];
+  });
+  const [filter, setFilter] = useState('');
 
   useEffect(() => {
     localStorage.setItem('contacts', JSON.stringify(contacts));
   }, [contacts]);
 
   const addContact = newContact => {
-    if (!isContactExist(newContact.name)) {
-      setContacts(prevContacts => [
-        ...prevContacts,
-        { ...newContact, id: nanoid() },
-      ]);
-    } else {
+    if (isContactExist(newContact.name)) {
       alert(`${newContact.name} is already in contacts!`);
+      return;
     }
+
+    setContacts(prevContacts => [
+      ...prevContacts,
+      { ...newContact, id: nanoid() },
+    ]);
   };
 
   const deleteContact = contactId => {
